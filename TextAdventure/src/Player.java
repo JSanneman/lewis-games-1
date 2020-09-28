@@ -22,6 +22,7 @@ public class Player {
 	 * Requires user to change file names in illegal cases. 
 	 * @param fileName
 	 */
+	@SuppressWarnings("resource")
 	public Player(String fileName ) {
 		Scanner scan = new Scanner(System.in);
 		try {
@@ -30,14 +31,12 @@ public class Player {
 				
 				if (fileName.equals("tempPlayer")) {
 					System.out.println("There is no temporary file to be loaded.");
-					scan.close();
 					newPlayer.delete();
 					return;
 				}
 				
 				System.out.println("\nFile created. To load this character in the future, enter their name: " + fileName);
 				setPlayerFileName(fileName);
-				scan.close();
 			} else {
 				System.out.println("\nFile loaded. Welcome " + fileName);
 				
@@ -62,7 +61,6 @@ public class Player {
 						String abort = scan.next();
 						if (!abort.equalsIgnoreCase("y")) {
 							System.out.println("Your file was not overwritten, and the temporary file still exists.");
-							scan.close();
 							return;
 						}
 						
@@ -76,11 +74,9 @@ public class Player {
 				
 				
 				setPlayerFileName(fileName);
-				scan.close();
 			}
 		} catch (Exception ex) {
 			System.out.println(ex);
-			scan.close();
 		}
 	}
 	
@@ -183,6 +179,7 @@ public class Player {
 				
 			} else {
 				System.out.println("\nSomething has gone wrong, unable to save.\n In the event that your old file no longer works, try typing in \"tempPlayer\" after choosing \"Load\".");
+				tempPlayer.close();
 			}
 			
 		} catch(Exception ex) {
@@ -193,6 +190,16 @@ public class Player {
 		return false;
 	}
 
+	
+	public void printStats() {
+		System.out.println("Your health is at: " + getHealth() + "/" + getMaxHealth());
+		System.out.println("Your attack is:    " + getAttack());
+		System.out.println("Your defense is:   " + getDefense());
+		System.out.println("Your speed is:     " + getSpeed());
+		System.out.println("You have           " + getMoney() + " coins.");
+		System.out.println("You have           " + getKeys() + " keys.");
+		System.out.println("You have           " + getBombs() + " bombs.");
+	}
 	
 	//Typical getters and setters, all the way down the line
 	
@@ -218,7 +225,11 @@ public class Player {
 	}
 
 	public void setHealth(int health) {
-		this.health = health;
+		if (health > getMaxHealth()) {
+			this.health = getMaxHealth();
+		} else {
+			this.health = health;
+		}
 	}
 
 	public int getAttack() {

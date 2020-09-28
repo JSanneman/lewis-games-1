@@ -2,11 +2,12 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Floor {
-	private int MAP_SIZE = 4;
+	private int MAP_SIZE = 4; //created in case I want to make bigger maps, in caps for easy to read format (like a constant)
 	private Room[][] map = new Room[MAP_SIZE][MAP_SIZE];
 	private int level;
 	private int xPos;
 	private int yPos;
+	private int usedKey = 0;
 	
 	public Floor(int level) {
 		int x = 0;
@@ -236,6 +237,10 @@ public class Floor {
 		
 	}
 	
+	/**
+	 * Returns the map in a text visual.
+	 * Has keys for each room type.
+	 */
 	public void visualize() {
 		int x = 0;
 		int y = 0;
@@ -244,7 +249,9 @@ public class Floor {
 			while (y < MAP_SIZE) {
 				test = map[x][y].getRoomType();
 				
-				if (test.equals("treasure")) {
+				if (x == xPos && y == yPos) {
+					System.out.print("YOU ");
+				} else if (test.equals("treasure")) {
 					System.out.print("TR  ");
 				} else if (test.equals("item")) {
 					System.out.print("IT  ");
@@ -253,11 +260,7 @@ public class Floor {
 				} else if (test.equals("stair")) {
 					System.out.print("ST  ");
 				} else if (test.equals("empty")) {
-					if (x == xPos && y == yPos) {
-						System.out.print("YOU ");
-					} else {
 						System.out.print("EM  ");
-					}
 				} else if (test.equals("camp")) {
 					System.out.print("RS  ");
 				}
@@ -269,25 +272,102 @@ public class Floor {
 		}
 	}
 
-	public void move() {
+	//Passes room type from the current location to the game manager.
+	public String roomType() {
+		return map[getX()][getY()].getRoomType();
+	}
+	
+	public boolean move(int keys) {
 		String dir = "";
+		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
+		boolean hasKey = (keys > 0);
 		
-		if (dir.equalsIgnoreCase("North")) { //North is negative y dir
+		System.out.print("Enter a cardinal direction, or \"Exit\": ");
+		dir = sc.nextLine();
+		
+		while(!dir.equalsIgnoreCase("exit")) {
+			if (dir.equalsIgnoreCase("North")) { //North is negative y dir
+				
+				if (getY() == 0) { //First check to make sure we are within the bounds of the array
+					System.out.println("There is no door to the north.");
+					
+				} else if (map[getX()][getY()-1].isLocked()) { //Then check if the room in that position is locked
+					if (hasKey) {
+						while (!dir.equals("Y") && !dir.equals("N")) {
+							System.out.println("This room is locked. Would you like to use a key? (Y/N)");
+							dir = sc.nextLine();
+							if (dir.equals("Y")) {
+								setX(xPos);
+								setY(yPos-1);
+								return true;
+							}
+						}
+					} else {
+						System.out.println("This room is locked, come back when you have a key.");
+					}
+					
+				}
+				setX(xPos);
+				setY(yPos-1);
+				return true;
+				
+			} else if (dir.equalsIgnoreCase("South")) { //South is positive y dir
+				//TO DO
+			} else if (dir.equalsIgnoreCase("East")) { //East is positive x dir
+				//TO DO
+			} else if (dir.equalsIgnoreCase("West")) { //West is negative x dir
+				//TO DO
+			} else {
+				System.out.println("Please specify a direction (North, East, South, West)");
+			}
 			
-		} else if (dir.equalsIgnoreCase("South")) { //South is positive y dir
-			//TO DO
-		} else if (dir.equalsIgnoreCase("East")) { //East is positive x dir
-			//TO DO
-		} else if (dir.equalsIgnoreCase("West")) { //West is negative x dir
-			//TO DO
-		} else {
 			System.out.println("Enter another direction? (Y) Hit any other key for No.");
 			dir = sc.nextLine();
-			if (dir.equalsIgnoreCase("Y")) {
-				move();
+			
+			if(!dir.equalsIgnoreCase("y")) {
+				dir = "exit";
 			}
+			
 		}
+		
+		return false;			
+		
 	}
 
+	//This is probably bad code, but this helps tell if the player has used a key
+	//since move() already returns a boolean
+	public int usedKey() {
+		int result = this.usedKey;
+		this.usedKey = 0;
+		return result;
+	}
+	
+	
+	//Getter/setters
+	public int getMAP_SIZE() {
+		return MAP_SIZE;
+	}
+
+	public void setMAP_SIZE(int mAP_SIZE) {
+		MAP_SIZE = mAP_SIZE;
+	}
+
+	public Room[][] getMap() {
+		return map;
+	}
+
+	public void setMap(Room[][] map) {
+		this.map = map;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+	
+	
 }

@@ -5,9 +5,6 @@ public class AdventureApp {
 	public static void main(String[] args) {
 		//Floor test = new Floor(1);
 		
-		Scanner sc = new Scanner(System.in);
-		String selection = "";
-		
 		System.out.println("To start a new game, type \"Start\"");
 		System.out.println("To play with a preset character, type \"Load\"");
 		System.out.println("To exit the program, type \"Exit\"");
@@ -22,6 +19,7 @@ public class AdventureApp {
 		//GameManager runningGame = new GameManager();
 		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
+		@SuppressWarnings("resource")
 		Scanner strSc = new Scanner(System.in);
 		//sc.useDelimiter(System.lineSeparator());
 		
@@ -46,6 +44,7 @@ public class AdventureApp {
 				//Ensures the player file has loaded, written to the player class, and saved, before being sure to launch the game
 				if (playGame.savePlayer()) {
 					GameManager runningGame = new GameManager(playGame);
+					runningGame.playGame();
 				}
 			
 			} else if (selection.equalsIgnoreCase("Load")){
@@ -56,6 +55,7 @@ public class AdventureApp {
 				Player playGame = new Player(str);
 				if (playGame.savePlayer()) {
 					GameManager runningGame = new GameManager(playGame);
+					runningGame.playGame();
 				}
 		
 			} else if (selection.equalsIgnoreCase("Exit")) {
@@ -69,11 +69,9 @@ public class AdventureApp {
 			str = "";
 			
 			System.out.print("Selection: "); //Having issues here
-				try {
+			
 					selection = sc.nextLine();
-				} catch (Exception ex) {
-					System.out.println(ex);
-				}
+				
 			
 		}
 		
