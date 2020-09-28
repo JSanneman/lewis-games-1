@@ -1,5 +1,7 @@
 import java.util.Scanner;
 
+//This is to test that my git commits are actually working.
+
 public class GameManager {
 	private int level = 0;
 	private Player player;
