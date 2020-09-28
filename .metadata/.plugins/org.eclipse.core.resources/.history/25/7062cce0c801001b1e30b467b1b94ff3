@@ -1,0 +1,73 @@
+import java.util.Random;
+
+public class Enemy {
+	private int difficulty;
+	private int maxHealth = 16;
+	private int health = 16;
+	private int attack = 0;
+	private int defense = 0;
+	private int speed = -1;
+	private String eType = "basic";
+	
+	public Enemy(int level) {
+		setDifficulty(level);
+		setMaxHealth(getMaxHealth() + 4*getDifficulty());
+		setAttack(getAttack() + 2*getDifficulty());
+		setDefense(getDefense() + 2*getDifficulty());
+		setSpeed(getSpeed() + 2*getDifficulty());
+	}
+	
+	public void rollStats() {
+		Random roll = new Random();
+		int rolled;
+		int sign;
+		
+		
+		
+		rolled = roll.nextInt(4);
+		sign = roll.nextInt(2);
+		if (sign == 0) {
+			
+		}
+	}
+	
+	
+	public int getDifficulty() {
+		return difficulty;
+	}
+	public void setDifficulty(int difficulty) {
+		this.difficulty = difficulty;
+	}
+	public int getMaxHealth() {
+		return maxHealth;
+	}
+	public void setMaxHealth(int maxHealth) {
+		this.maxHealth = maxHealth;
+	}
+	public int getHealth() {
+		return health;
+	}
+	public void setHealth(int health) {
+		this.health = health;
+	}
+	public int getAttack() {
+		return attack;
+	}
+	public void setAttack(int attack) {
+		this.attack = attack;
+	}
+	public int getDefense() {
+		return defense;
+	}
+	public void setDefense(int defense) {
+		this.defense = defense;
+	}
+	public int getSpeed() {
+		return speed;
+	}
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
+	
+	
+}
