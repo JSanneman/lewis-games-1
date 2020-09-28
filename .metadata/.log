@@ -1071,3 +1071,8 @@ You should consider renaming either the project in workspace, or editing the .pr
 	at org.eclipse.ui.internal.wizards.datatransfer.SmartImportJob.createOrImportProject(SmartImportJob.java:595)
 	at org.eclipse.ui.internal.wizards.datatransfer.SmartImportJob.toExistingOrNewProject(SmartImportJob.java:552)
 	... 2 more
+
+!ENTRY org.eclipse.core.resources 2 2 2020-09-28 17:33:21.587
+!MESSAGE Save operation warnings.
+!SUBENTRY 1 org.eclipse.core.resources 2 234 2020-09-28 17:33:21.587
+!MESSAGE The project description file (.project) for 'TextAdventure' was missing.  This file contains important information about the project.  A new project description file has been created, but some information about the project may have been lost.
