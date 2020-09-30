@@ -79,30 +79,30 @@ public class Floor {
 					map[xTest][yTest].setRoomType("shop");
 					map[xTest][yTest].setLocked(true);
 					refreshFlag++;
-					System.out.println("Shop populated"); //debug
+					System.out.println("Shop populated at " + xTest + ", " + yTest); //debug
 				}
 				break;
 			case 2: //Adds the camp room
 				if (map[xTest][yTest].getRoomType() == "empty") {
 					map[xTest][yTest].setRoomType("camp");
 					refreshFlag++;
-					System.out.println("Camp populated"); //debug
+					System.out.println("Camp populated at " + xTest + ", " + yTest); //debug
 				}
 				break;
 			case 3://Adds a guaranteed treasure room
 				if (map[xTest][yTest].getRoomType() == "empty") {
 					map[xTest][yTest].setRoomType("treasure");
 					map[xTest][yTest].setLocked(true);
-					System.out.println("Treasure 1 populated"); //debug
+					System.out.println("Treasure 1 populated at " + xTest + ", " + yTest); //debug
 					refreshFlag++;
 				}
 				break;
 			case 4: //Adds a chance to get a second treasure room
-				if (map[xTest][yTest].getRoomType() == "empty" || xTest>yTest) {
+				if (map[xTest][yTest].getRoomType() == "empty" && xTest>yTest) {
 					map[xTest][yTest].setRoomType("treasure");
 					map[xTest][yTest].setLocked(true);
 					extraKey = true;
-					System.out.println("Treasure 2 populated"); //debug
+					System.out.println("Treasure 2 populated at " + xTest + ", " + yTest); //debug
 					refreshFlag++;
 				} else {
 					System.out.println("Treasure 2 bypassed"); //debug
@@ -112,7 +112,7 @@ public class Floor {
 			case 5://Adds the stair room
 				if (map[xTest][yTest].getRoomType() == "empty") {
 					map[xTest][yTest].setRoomType("stair");
-					System.out.println("Stair populated"); //debug
+					System.out.println("Stair populated at " + xTest + ", " + yTest); //debug
 					refreshFlag++;
 				}
 				break;
@@ -121,7 +121,7 @@ public class Floor {
 				if (map[xTest][yTest].getRoomType() == "empty") {
 					map[xTest][yTest].setRoomType("item");
 					map[xTest][yTest].setKey(true);
-					System.out.println("Key populated"); //debug
+					System.out.println("Key populated at " + xTest + ", " + yTest); //debug
 					refreshFlag++;
 				}
 				break;
@@ -131,16 +131,16 @@ public class Floor {
 					if (extraKey) {
 						map[xTest][yTest].setKey(true);
 					}
-					System.out.println("Key populated"); //debug
+					System.out.println("Key populated at " + xTest + ", " + yTest); //debug
 					refreshFlag++;
 				}
 				break;
 			case 9:
 			case 10:
 			case 11:
-				if (map[xTest][yTest].getRoomType() == "empty"|| xTest>=yTest) {
+				if (map[xTest][yTest].getRoomType() == "empty"&& xTest>=yTest) {
 					map[xTest][yTest].setRoomType("item");
-					System.out.println("Item populated"); //debug
+					System.out.println("Item populated at " + xTest + ", " + yTest); //debug
 					refreshFlag++;
 				} else {
 					System.out.println("Item bypassed"); //debug
@@ -154,7 +154,7 @@ public class Floor {
 				 * is necessary before laying down the starting position. The only
 				 * guaranteed path is one towards the center
 				 */
-				if (map[xTest][yTest].getRoomType() == "empty") {
+				if (map[xTest][yTest].getRoomType().equals("empty")) {
 					
 					System.out.println("\nChecking Starting position of " + xTest + ", " + yTest); //debug
 					
@@ -225,7 +225,7 @@ public class Floor {
 					refreshFlag++;
 					break;
 				} else {
-					System.out.println("\nPosition failed as it is not empty" + xTest + ", " + yTest); //debug
+					System.out.println("\nPosition failed as it is not empty: " + xTest + ", " + yTest); //debug
 					break;
 				}
 			default:
@@ -287,10 +287,88 @@ public class Floor {
 		dir = sc.nextLine();
 		
 		while(!dir.equalsIgnoreCase("exit")) {
-			if (dir.equalsIgnoreCase("North")) { //North is negative y dir
+			if (dir.equalsIgnoreCase("North")) { //North is negative x dir
 				
-				if (getY() == 0) { //First check to make sure we are within the bounds of the array
+				if (getX() == 0) { //First check to make sure we are within the bounds of the array
 					System.out.println("There is no door to the north.");
+					
+				} else if (map[getX()-1][getY()].isLocked()) { //Then check if the room in that position is locked
+					if (hasKey) {
+						while (!dir.equals("Y") && !dir.equals("N")) {
+							System.out.println("This room is locked. Would you like to use a key? (Y/N)");
+							dir = sc.nextLine();
+							if (dir.equals("Y")) {
+								setX(xPos-1);
+								setY(yPos);
+								this.visualize();
+								return true;
+							}
+						}
+					} else {
+						System.out.println("This room is locked, come back when you have a key.");
+					}
+					
+				} else {
+					setX(xPos-1);
+					setY(yPos);
+					this.visualize();
+					return true;
+				}
+			} else if (dir.equalsIgnoreCase("South")) { //South is positive x dir
+				if (getX() == MAP_SIZE-1) { //First check to make sure we are within the bounds of the array
+					System.out.println("There is no door to the south.");
+					
+				} else if (map[getX()+1][getY()].isLocked()) { //Then check if the room in that position is locked
+					if (hasKey) {
+						while (!dir.equals("Y") && !dir.equals("N")) {
+							System.out.println("This room is locked. Would you like to use a key? (Y/N)");
+							dir = sc.nextLine();
+							if (dir.equals("Y")) {
+								setX(xPos+1);
+								setY(yPos);
+								this.visualize();
+								return true;
+							}
+						}
+					} else {
+						System.out.println("This room is locked, come back when you have a key.");
+					}
+					
+				} else {
+					setX(xPos+1);
+					setY(yPos);
+					this.visualize();
+					return true;
+				}
+			} else if (dir.equalsIgnoreCase("East")) { //East is positive y dir
+				if (getY() == MAP_SIZE-1) { //First check to make sure we are within the bounds of the array
+					System.out.println("There is no door to the east.");
+					
+				} else if (map[getX()][getY()+1].isLocked()) { //Then check if the room in that position is locked
+					if (hasKey) {
+						while (!dir.equals("Y") && !dir.equals("N")) {
+							System.out.println("This room is locked. Would you like to use a key? (Y/N)");
+							dir = sc.nextLine();
+							if (dir.equals("Y")) {
+								setX(xPos);
+								setY(yPos+1);
+								this.visualize();
+								return true;
+							}
+						}
+					} else {
+						System.out.println("This room is locked, come back when you have a key.");
+					}
+					
+				} else {
+					setX(xPos);
+					setY(yPos+1);
+					this.visualize();
+					return true;
+				}
+			} else if (dir.equalsIgnoreCase("West")) { //West is negative y dir
+				if (getY() == 0) { //First check to make sure we are within the bounds of the array
+					System.out.println("There is no door to the west.");
 					
 				} else if (map[getX()][getY()-1].isLocked()) { //Then check if the room in that position is locked
 					if (hasKey) {
@@ -300,6 +378,7 @@ public class Floor {
 							if (dir.equals("Y")) {
 								setX(xPos);
 								setY(yPos-1);
+								this.visualize();
 								return true;
 							}
 						}
@@ -307,17 +386,12 @@ public class Floor {
 						System.out.println("This room is locked, come back when you have a key.");
 					}
 					
+				} else {
+					setX(xPos);
+					setY(yPos-1);
+					this.visualize();
+					return true;
 				}
-				setX(xPos);
-				setY(yPos-1);
-				return true;
-				
-			} else if (dir.equalsIgnoreCase("South")) { //South is positive y dir
-				//TO DO
-			} else if (dir.equalsIgnoreCase("East")) { //East is positive x dir
-				//TO DO
-			} else if (dir.equalsIgnoreCase("West")) { //West is negative x dir
-				//TO DO
 			} else {
 				System.out.println("Please specify a direction (North, East, South, West)");
 			}

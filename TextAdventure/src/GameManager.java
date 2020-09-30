@@ -7,6 +7,7 @@ public class GameManager {
 	private Player player;
 	private Floor activeFloor;
 	private boolean inCombat = false;
+	private boolean canRest = true;
 	
 	public GameManager(Player player){
 		setPlayer(player);
@@ -16,6 +17,7 @@ public class GameManager {
 		setLevel(player.getMaxLevel());
 		System.out.println("You start on level " + getLevel());
 		setActiveFloor(new Floor(getLevel()));
+		getActiveFloor().visualize();
 	}
 	
 	public void playGame() {
@@ -35,47 +37,77 @@ public class GameManager {
 				player.printStats();
 				
 			} else if (gameControl.equalsIgnoreCase("look") ) {
+				//Call description
 				
 			} else if (gameControl.equalsIgnoreCase("exit") ) {
+				//offer to save
 				
 			} else if (gameControl.equalsIgnoreCase("save") ) {
+				//save the game
 				
 			} else if (gameControl.equalsIgnoreCase("attack") ) {
 				if(!inCombat) {
 					System.out.println("You cannot perform that action here.");
+				} else {
+					//use stats to detract health
 				}
 				
 			} else if (gameControl.equalsIgnoreCase("defend") ) {
 				if(!inCombat) {
 					System.out.println("You cannot perform that action here.");
+				} else {
+					//nullify the next attack, raise attack for next turn
 				}
 				
 			} else if (gameControl.equalsIgnoreCase("item") ) {
+				//bring up an item menu
 				
 			} else if (gameControl.equalsIgnoreCase("move") ) {
 				if(inCombat) {
 					System.out.println("You are under attack! Defeat your foe before you move on.");
 				} else {
 					if(getActiveFloor().move(player.getKeys())) {
-						
+						//trigger potential enemy attack
 					}
 				}
 				
 			} else if (gameControl.equalsIgnoreCase("loot") ) {
 				if(inCombat) {
 					System.out.println("You are under attack! Defeat your foe before you look for items.");
+				} else {
+					//add item to player's inventory
 				}
 				
 			} else if (gameControl.equalsIgnoreCase("rest") ) {
-				if (getActiveFloor().roomType().equals("camp")){
+				if (getActiveFloor().roomType().equals("camp") && isCanRest()){
 					System.out.println("You lay down to rest for a moment. Your hp has been restored.");
 					player.setHealth(player.getHealth()+20);
+					setCanRest(false);
+				} else if (!getActiveFloor().roomType().equals("camp")) {
+					System.out.println("This is no place for a nap.");
+				} else {
+					System.out.println("You have already rested here, it's time to get going.");
 				}
 				
 			} else if (gameControl.equalsIgnoreCase("shop") ) {
-				
+				if (getActiveFloor().roomType().equals("shop")) {
+					//open shop
+				} else {
+					System.out.println("There is no shop here...");
+				}
 			} else if (gameControl.equalsIgnoreCase("onward") ) {
-				
+				if (getActiveFloor().roomType().equals("stair")) {
+					System.out.println("Are you sure? You will permanently increase the difficulty and never be able to revisit this floor.");
+					System.out.print("Press \"Y\" to confirm, anything else to cancel.");
+					
+					gameControl = playerInput.next();
+					if(gameControl.equalsIgnoreCase("y")) {
+						System.out.println("You venture onward.");
+						setLevel(getLevel()+1);
+						setActiveFloor(new Floor(getLevel()));
+						setCanRest(true);
+					}
+				}
 			} else {
 				System.out.println("Please input a valid action. If you would like a list, type \"Help\" or \"Controls\"");
 			}
@@ -138,6 +170,22 @@ public class GameManager {
 
 	public void setActiveFloor(Floor activeFloor) {
 		this.activeFloor = activeFloor;
+	}
+
+	public boolean isInCombat() {
+		return inCombat;
+	}
+
+	public void setInCombat(boolean inCombat) {
+		this.inCombat = inCombat;
+	}
+
+	public boolean isCanRest() {
+		return canRest;
+	}
+
+	public void setCanRest(boolean canRest) {
+		this.canRest = canRest;
 	}
 	
 	
