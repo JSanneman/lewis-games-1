@@ -8,6 +8,7 @@ public class Enemy {
 	private int defense = -2;
 	private int speed = -1;
 	private String eType = "basic";
+	private boolean stunned = false;
 	
 	public Enemy(int level) {
 		//Enemy initialized with leveled stats based on what floor they spawn on.
@@ -70,6 +71,40 @@ public class Enemy {
 		
 	}
 	
+	
+	
+	
+	public boolean isStunned() {
+		if (this.stunned) {
+			this.stunned = false;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public void setStunned(boolean stunned) {
+		this.stunned = stunned;
+	}
+
+	public void heal(int amount) {
+		setHealth(getHealth() + amount);
+	}
+	
+	public boolean damage(int amount) {
+		if (amount > getDefense()) {
+			setHealth(getHealth() - (amount - getDefense()));
+			System.out.println("Your enemy took " + (amount - getDefense()) + " damage");
+		} else {
+			setHealth(getHealth() - 1);
+			System.out.println("Your enemy took 1 damage");
+		}
+		if (getHealth()<0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	public int getDifficulty() {
 		return difficulty;

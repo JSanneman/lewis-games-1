@@ -283,10 +283,10 @@ public class Floor {
 		Scanner sc = new Scanner(System.in);
 		boolean hasKey = (keys > 0);
 		
-		System.out.print("Enter a cardinal direction, or \"Exit\": ");
-		dir = sc.nextLine();
 		
 		while(!dir.equalsIgnoreCase("exit")) {
+			System.out.print("Enter a cardinal direction, or \"Exit\": ");
+			dir = sc.nextLine();
 			if (dir.equalsIgnoreCase("North")) { //North is negative x dir
 				
 				if (getX() == 0) { //First check to make sure we are within the bounds of the array
@@ -294,13 +294,15 @@ public class Floor {
 					
 				} else if (map[getX()-1][getY()].isLocked()) { //Then check if the room in that position is locked
 					if (hasKey) {
-						while (!dir.equals("Y") && !dir.equals("N")) {
+						while (!dir.equalsIgnoreCase("Y") && !dir.equalsIgnoreCase("N")) {
 							System.out.println("This room is locked. Would you like to use a key? (Y/N)");
 							dir = sc.nextLine();
-							if (dir.equals("Y")) {
+							if (dir.equalsIgnoreCase("Y")) {
 								setX(xPos-1);
 								setY(yPos);
 								this.visualize();
+								this.usedKey = 1;
+								map[xPos][yPos].setLocked(false);
 								return true;
 							}
 						}
@@ -320,13 +322,15 @@ public class Floor {
 					
 				} else if (map[getX()+1][getY()].isLocked()) { //Then check if the room in that position is locked
 					if (hasKey) {
-						while (!dir.equals("Y") && !dir.equals("N")) {
+						while (!dir.equalsIgnoreCase("Y") && !dir.equalsIgnoreCase("N")) {
 							System.out.println("This room is locked. Would you like to use a key? (Y/N)");
 							dir = sc.nextLine();
-							if (dir.equals("Y")) {
+							if (dir.equalsIgnoreCase("Y")) {
 								setX(xPos+1);
 								setY(yPos);
 								this.visualize();
+								this.usedKey = 1;
+								map[xPos][yPos].setLocked(false);
 								return true;
 							}
 						}
@@ -346,13 +350,15 @@ public class Floor {
 					
 				} else if (map[getX()][getY()+1].isLocked()) { //Then check if the room in that position is locked
 					if (hasKey) {
-						while (!dir.equals("Y") && !dir.equals("N")) {
+						while (!dir.equalsIgnoreCase("Y") && !dir.equalsIgnoreCase("N")) {
 							System.out.println("This room is locked. Would you like to use a key? (Y/N)");
 							dir = sc.nextLine();
-							if (dir.equals("Y")) {
+							if (dir.equalsIgnoreCase("Y")) {
 								setX(xPos);
 								setY(yPos+1);
 								this.visualize();
+								this.usedKey = 1;
+								map[xPos][yPos].setLocked(false);
 								return true;
 							}
 						}
@@ -372,13 +378,15 @@ public class Floor {
 					
 				} else if (map[getX()][getY()-1].isLocked()) { //Then check if the room in that position is locked
 					if (hasKey) {
-						while (!dir.equals("Y") && !dir.equals("N")) {
+						while (!dir.equalsIgnoreCase("Y") && !dir.equalsIgnoreCase("N")) {
 							System.out.println("This room is locked. Would you like to use a key? (Y/N)");
 							dir = sc.nextLine();
-							if (dir.equals("Y")) {
+							if (dir.equalsIgnoreCase("Y")) {
 								setX(xPos);
 								setY(yPos-1);
 								this.visualize();
+								this.usedKey = 1;
+								map[xPos][yPos].setLocked(false);
 								return true;
 							}
 						}
@@ -392,16 +400,19 @@ public class Floor {
 					this.visualize();
 					return true;
 				}
+			} else if (dir.equalsIgnoreCase("exit")) {
+				return false;
 			} else {
 				System.out.println("Please specify a direction (North, East, South, West)");
+				while (!dir.equalsIgnoreCase("Y") && !dir.equalsIgnoreCase("N")) {
+					System.out.println("Enter another direction? (Y/N)");
+					dir = sc.nextLine();
+					if(dir.equalsIgnoreCase("n")) {
+							return false;
+					}
+				}
 			}
 			
-			System.out.println("Enter another direction? (Y) Hit any other key for No.");
-			dir = sc.nextLine();
-			
-			if(!dir.equalsIgnoreCase("y")) {
-				dir = "exit";
-			}
 			
 		}
 		
@@ -417,6 +428,18 @@ public class Floor {
 		return result;
 	}
 	
+	public String passDescription() {
+		return(map.clone()[xPos][yPos].getDescription());
+	}
+	
+	//These two are to prevent players from combat in rooms they've already explored.
+	public boolean roomEncountered() {
+		return (map[xPos][yPos].hadEncounter());
+	}
+	
+	public void setRoomEnounter() {
+		map[xPos][yPos].setEncounter(true);
+	}
 	
 	//Getter/setters
 	public int getMAP_SIZE() {

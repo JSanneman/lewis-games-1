@@ -13,9 +13,11 @@ public class Room {
 	private String description;
 	private int x;
 	private int y;
-	// These two are used to ensure the entire map is playable
+	//These two are used to ensure the entire map is playable
 	private boolean locked = false;
 	private boolean hasKey = false;
+	//This makes every room capable of spawning only one enemy.
+	private boolean hadEncounter = false;
 	
 	// Room is initialized with it's position, because ?? I made it that way
 	public Room(int x, int y) {
@@ -24,10 +26,12 @@ public class Room {
 	}
 
 	public String getRoomType() {
+		decodeDescription();
 		return roomType;
 	}
 
 	public void setRoomType(String roomType) {
+		decodeDescription();
 		this.roomType = roomType;
 	}
 
@@ -70,6 +74,14 @@ public class Room {
 	public void setKey(boolean key) {
 		this.hasKey = key;
 	}
+	
+	public boolean hadEncounter() {
+		return hadEncounter;
+	}
+
+	public void setEncounter(boolean hadEncounter) {
+		this.hadEncounter = hadEncounter;
+	}
 
 	// Takes room type to set a string to return when entering a room.
 	public void decodeDescription() {
@@ -80,7 +92,7 @@ public class Room {
 		} else if (this.roomType == "shop") {
 			this.description = "\nA friendly shopkeeper is here. Type \"Shop\" to check their stock!";
 		} else if (this.roomType == "stair") {
-			this.description = "\nThere are some stairs here. You can't see much. Type \"Descend\" to go down a floor.\nYOU CANNOT RETURN TO A PREVIOUS FLOOR";
+			this.description = "\nThere are some stairs here. You can't see much. Type \"Onward\" to go down a floor.\nYOU CANNOT RETURN TO A PREVIOUS FLOOR";
 		} else if (this.roomType == "empty") {
 			this.description = "\nThere is nothing here but the walls of stone. Best be moving on.";
 		} else if (this.roomType == "camp") {

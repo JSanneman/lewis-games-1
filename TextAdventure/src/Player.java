@@ -7,8 +7,8 @@ public class Player {
 	private int maxLevel = 1;
 	private int maxHealth = 20;
 	private int health = 20;
-	private int attack = 1;
-	private int defense = 0;
+	private int attack = 5;
+	private int defense = 3;
 	private int speed = 1;
 	private int keys = 0;
 	private int money = 0;
@@ -92,10 +92,15 @@ public class Player {
 			Scanner fileIn = new Scanner(playerFile);
 			//Player file will be extremely basic and contain this order.
 			setMaxLevel(fileIn.nextInt());
+			System.out.print("Set level to " + getMaxLevel());
 			setMaxHealth(fileIn.nextInt());
+			System.out.print("\nSet max health to " + getMaxHealth());
 			setHealth(fileIn.nextInt());
+			System.out.print("\nSet health to " + getHealth());
 			setAttack(fileIn.nextInt());
+			System.out.print("\nSet attack to " + getAttack());
 			setDefense(fileIn.nextInt());
+			System.out.print("\nSet defense to " + getDefense());
 			setSpeed(fileIn.nextInt());
 			setKeys(fileIn.nextInt());
 			setMoney(fileIn.nextInt());
@@ -202,6 +207,25 @@ public class Player {
 	}
 	
 	//Typical getters and setters, all the way down the line
+	
+	public void heal(int amount) {
+		setHealth(getHealth() + amount);
+	}
+	
+	public boolean damage(int amount) {
+		if (amount > getDefense()) {
+			setHealth(getHealth() - (amount - getDefense()));
+			System.out.println("You took " + (amount - getDefense()) + " damage");
+		} else {
+			setHealth(getHealth() - 1);
+			System.out.println("You took 1 damage");
+		}
+		if (getHealth()<0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 
 	public int getMaxLevel() {
