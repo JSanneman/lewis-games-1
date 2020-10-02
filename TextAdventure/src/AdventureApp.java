@@ -5,7 +5,11 @@ public class AdventureApp {
 	public static void main(String[] args) {
 		//Floor test = new Floor(1);
 		
-		System.out.println("To start a new game, type \"Start\"");
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		System.out.println("  Welcome to the endless dungeon!  ");
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		
+		System.out.println("/nTo start a new game, type \"Start\"");
 		System.out.println("To play with a preset character, type \"Load\"");
 		System.out.println("To exit the program, type \"Exit\"");
 		
@@ -16,14 +20,13 @@ public class AdventureApp {
 	public static void validResponse() {
 		String selection = "";
 		String str;
-		//GameManager runningGame = new GameManager();
 		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
 		@SuppressWarnings("resource")
 		Scanner strSc = new Scanner(System.in);
-		//sc.useDelimiter(System.lineSeparator());
 		
 		//Basic selection, not case sensitive
+		
 		System.out.print("Selection: ");
 		selection = sc.nextLine();
 		
@@ -59,6 +62,7 @@ public class AdventureApp {
 				}
 		
 			} else if (selection.equalsIgnoreCase("Exit")) {
+				//Never seen, but it's the thought that counts
 				System.out.println("Goodbye, have a nice day.");
 				return;
 			} else {
@@ -68,7 +72,7 @@ public class AdventureApp {
 			selection = "";
 			str = "";
 			
-			System.out.print("Selection: "); //Having issues here
+			System.out.print("Selection: ");
 			
 					selection = sc.nextLine();
 				

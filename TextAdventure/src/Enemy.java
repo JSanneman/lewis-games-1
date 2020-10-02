@@ -99,7 +99,7 @@ public class Enemy {
 			setHealth(getHealth() - 1);
 			System.out.println("Your enemy took 1 damage");
 		}
-		if (getHealth()<0) {
+		if (getHealth()<=0) {
 			return true;
 		} else {
 			return false;

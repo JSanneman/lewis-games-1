@@ -56,13 +56,13 @@ public class Floor {
 		int xTest;
 		int yTest;
 		int refreshFlag = 1;
+		boolean extraKey = false;
 		
 		//Loops 12 times for 12 rooms, some required and some chance based
 		while (refreshFlag > 0 && refreshFlag < 13) {
 			//Each iteration chooses new coordinates
 			xTest = rnd.nextInt(MAP_SIZE);
 			yTest = rnd.nextInt(MAP_SIZE);
-			boolean extraKey = false;
 			
 			switch (refreshFlag) {
 			/**
@@ -79,21 +79,21 @@ public class Floor {
 					map[xTest][yTest].setRoomType("shop");
 					map[xTest][yTest].setLocked(true);
 					refreshFlag++;
-					System.out.println("Shop populated at " + xTest + ", " + yTest); //debug
+					//System.out.println("Shop populated at " + xTest + ", " + yTest); //debug
 				}
 				break;
 			case 2: //Adds the camp room
 				if (map[xTest][yTest].getRoomType() == "empty") {
 					map[xTest][yTest].setRoomType("camp");
 					refreshFlag++;
-					System.out.println("Camp populated at " + xTest + ", " + yTest); //debug
+					//System.out.println("Camp populated at " + xTest + ", " + yTest); //debug
 				}
 				break;
 			case 3://Adds a guaranteed treasure room
 				if (map[xTest][yTest].getRoomType() == "empty") {
 					map[xTest][yTest].setRoomType("treasure");
 					map[xTest][yTest].setLocked(true);
-					System.out.println("Treasure 1 populated at " + xTest + ", " + yTest); //debug
+					//System.out.println("Treasure 1 populated at " + xTest + ", " + yTest); //debug
 					refreshFlag++;
 				}
 				break;
@@ -102,17 +102,17 @@ public class Floor {
 					map[xTest][yTest].setRoomType("treasure");
 					map[xTest][yTest].setLocked(true);
 					extraKey = true;
-					System.out.println("Treasure 2 populated at " + xTest + ", " + yTest); //debug
+					//System.out.println("Treasure 2 populated at " + xTest + ", " + yTest); //debug
 					refreshFlag++;
 				} else {
-					System.out.println("Treasure 2 bypassed"); //debug
+					//System.out.println("Treasure 2 bypassed"); //debug
 					refreshFlag++;
 				}
 				break;
 			case 5://Adds the stair room
 				if (map[xTest][yTest].getRoomType() == "empty") {
 					map[xTest][yTest].setRoomType("stair");
-					System.out.println("Stair populated at " + xTest + ", " + yTest); //debug
+					//System.out.println("Stair populated at " + xTest + ", " + yTest); //debug
 					refreshFlag++;
 				}
 				break;
@@ -121,7 +121,7 @@ public class Floor {
 				if (map[xTest][yTest].getRoomType() == "empty") {
 					map[xTest][yTest].setRoomType("item");
 					map[xTest][yTest].setKey(true);
-					System.out.println("Key populated at " + xTest + ", " + yTest); //debug
+					//System.out.println("Key populated at " + xTest + ", " + yTest); //debug
 					refreshFlag++;
 				}
 				break;
@@ -131,7 +131,7 @@ public class Floor {
 					if (extraKey) {
 						map[xTest][yTest].setKey(true);
 					}
-					System.out.println("Key populated at " + xTest + ", " + yTest); //debug
+					//System.out.println("Key populated at " + xTest + ", " + yTest); //debug
 					refreshFlag++;
 				}
 				break;
@@ -140,10 +140,10 @@ public class Floor {
 			case 11:
 				if (map[xTest][yTest].getRoomType() == "empty"&& xTest>=yTest) {
 					map[xTest][yTest].setRoomType("item");
-					System.out.println("Item populated at " + xTest + ", " + yTest); //debug
+					//System.out.println("Item populated at " + xTest + ", " + yTest); //debug
 					refreshFlag++;
 				} else {
-					System.out.println("Item bypassed"); //debug
+					//System.out.println("Item bypassed"); //debug
 					refreshFlag++;
 				}
 				break;
@@ -156,21 +156,21 @@ public class Floor {
 				 */
 				if (map[xTest][yTest].getRoomType().equals("empty")) {
 					
-					System.out.println("\nChecking Starting position of " + xTest + ", " + yTest); //debug
+					//System.out.println("\nChecking Starting position of " + xTest + ", " + yTest); //debug
 					
 					if (xTest == 0) {
 						if (yTest == 0 || yTest == (MAP_SIZE-1)) {
 							//Corners are too high risk and require too much checking
-							System.out.println("\nPosition failed as it is a corner " + xTest + ", " + yTest); //debug
+							//System.out.println("\nPosition failed as it is a corner " + xTest + ", " + yTest); //debug
 							break;
 						}
 						if (map[xTest+1][yTest].isLocked() && (map[xTest][yTest+1].isLocked() && map[xTest][yTest-1].isLocked())) {
-							System.out.println("\nPosition failed as it locked in " + xTest + ", " + yTest); //debug
+							//System.out.println("\nPosition failed as it locked in " + xTest + ", " + yTest); //debug
 							break;
 						} else {
 							setX(xTest);
 							setY(yTest);
-							System.out.println("\nStarting Pos Success, Coords: " + xTest + ", " + yTest); //debug
+							//System.out.println("\nStarting Pos Success, Coords: " + xTest + ", " + yTest); //debug
 							refreshFlag++;
 							break;
 						}
@@ -178,16 +178,16 @@ public class Floor {
 					
 					if (xTest == (MAP_SIZE-1)) {
 						if (yTest == 0 || yTest == (MAP_SIZE-1)) {
-							System.out.println("\nPosition failed as it is a corner " + xTest + ", " + yTest); //debug
+							//System.out.println("\nPosition failed as it is a corner " + xTest + ", " + yTest); //debug
 							break;
 						}
 						if (map[xTest-1][yTest].isLocked() && (map[xTest][yTest+1].isLocked() && map[xTest][yTest-1].isLocked())) {
-							System.out.println("\nPosition failed as it locked in " + xTest + ", " + yTest); //debug
+							//System.out.println("\nPosition failed as it locked in " + xTest + ", " + yTest); //debug
 							break;
 						}  else {
 							setX(xTest);
 							setY(yTest);
-							System.out.println("\nStarting Pos Success, Coords: " + xTest + ", " + yTest); //debug
+							//System.out.println("\nStarting Pos Success, Coords: " + xTest + ", " + yTest); //debug
 							refreshFlag++;
 							break;
 						}
@@ -195,12 +195,12 @@ public class Floor {
 					
 					if (yTest == 0) {
 						if (map[xTest][yTest+1].isLocked() && (map[xTest+1][yTest].isLocked() && map[xTest-1][yTest].isLocked())) {
-							System.out.println("\nPosition failed as it locked in " + xTest + ", " + yTest); //debug
+							//System.out.println("\nPosition failed as it locked in " + xTest + ", " + yTest); //debug
 							break;
 						}  else {
 							setX(xTest);
 							setY(yTest);
-							System.out.println("\nStarting Pos Success, Coords: " + xTest + ", " + yTest); //debug
+							//System.out.println("\nStarting Pos Success, Coords: " + xTest + ", " + yTest); //debug
 							refreshFlag++;
 							break;
 						}
@@ -208,12 +208,12 @@ public class Floor {
 					
 					if (yTest == (MAP_SIZE-1)) {
 						if (map[xTest][yTest-1].isLocked() && (map[xTest+1][yTest].isLocked() && map[xTest-1][yTest].isLocked())) {
-							System.out.println("\nPosition failed as it locked in " + xTest + ", " + yTest); //debug
+							//System.out.println("\nPosition failed as it locked in " + xTest + ", " + yTest); //debug
 							break;
 						}  else {
 							setX(xTest);
 							setY(yTest);
-							System.out.println("\nStarting Pos Success, Coords: " + xTest + ", " + yTest); //debug
+							//System.out.println("\nStarting Pos Success, Coords: " + xTest + ", " + yTest); //debug
 							refreshFlag++;
 							break;
 						}
@@ -221,11 +221,11 @@ public class Floor {
 					//Now that we know this is not an edge case, just set the darn thing
 					setX(xTest);
 					setY(yTest);
-					System.out.println("\nStarting Pos Success, Coords: " + xTest + ", " + yTest); //debug
+					//System.out.println("\nStarting Pos Success, Coords: " + xTest + ", " + yTest); //debug
 					refreshFlag++;
 					break;
 				} else {
-					System.out.println("\nPosition failed as it is not empty: " + xTest + ", " + yTest); //debug
+					//System.out.println("\nPosition failed as it is not empty: " + xTest + ", " + yTest); //debug
 					break;
 				}
 			default:
@@ -300,7 +300,7 @@ public class Floor {
 							if (dir.equalsIgnoreCase("Y")) {
 								setX(xPos-1);
 								setY(yPos);
-								this.visualize();
+								//this.visualize(); //debug
 								this.usedKey = 1;
 								map[xPos][yPos].setLocked(false);
 								return true;
@@ -313,7 +313,7 @@ public class Floor {
 				} else {
 					setX(xPos-1);
 					setY(yPos);
-					this.visualize();
+					//this.visualize(); //debug
 					return true;
 				}
 			} else if (dir.equalsIgnoreCase("South")) { //South is positive x dir
@@ -328,7 +328,7 @@ public class Floor {
 							if (dir.equalsIgnoreCase("Y")) {
 								setX(xPos+1);
 								setY(yPos);
-								this.visualize();
+								//this.visualize(); //debug
 								this.usedKey = 1;
 								map[xPos][yPos].setLocked(false);
 								return true;
@@ -341,7 +341,7 @@ public class Floor {
 				} else {
 					setX(xPos+1);
 					setY(yPos);
-					this.visualize();
+					//this.visualize(); //debug
 					return true;
 				}
 			} else if (dir.equalsIgnoreCase("East")) { //East is positive y dir
@@ -356,7 +356,7 @@ public class Floor {
 							if (dir.equalsIgnoreCase("Y")) {
 								setX(xPos);
 								setY(yPos+1);
-								this.visualize();
+								//this.visualize(); //debug
 								this.usedKey = 1;
 								map[xPos][yPos].setLocked(false);
 								return true;
@@ -369,7 +369,7 @@ public class Floor {
 				} else {
 					setX(xPos);
 					setY(yPos+1);
-					this.visualize();
+					//this.visualize(); //debug
 					return true;
 				}
 			} else if (dir.equalsIgnoreCase("West")) { //West is negative y dir
@@ -384,7 +384,7 @@ public class Floor {
 							if (dir.equalsIgnoreCase("Y")) {
 								setX(xPos);
 								setY(yPos-1);
-								this.visualize();
+								//this.visualize(); //debug
 								this.usedKey = 1;
 								map[xPos][yPos].setLocked(false);
 								return true;
@@ -397,7 +397,7 @@ public class Floor {
 				} else {
 					setX(xPos);
 					setY(yPos-1);
-					this.visualize();
+					//this.visualize(); //debug
 					return true;
 				}
 			} else if (dir.equalsIgnoreCase("exit")) {
@@ -426,6 +426,19 @@ public class Floor {
 		int result = this.usedKey;
 		this.usedKey = 0;
 		return result;
+	}
+	
+	//Checks for key, if yes, remove key and return yes. If no, return no
+	public boolean keyRoom() {
+		if (map[xPos][yPos].hasKey()) {
+			map[xPos][yPos].setKey(false);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	public void emptyRoom() {
+		map[xPos][yPos].setRoomType("empty");
 	}
 	
 	public String passDescription() {

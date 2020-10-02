@@ -13,6 +13,7 @@ public class Player {
 	private int keys = 0;
 	private int money = 0;
 	private int bombs = 0;
+	private int healthPotions = 0;
 	private String playerFileName = "";
 	
 	/**
@@ -37,6 +38,7 @@ public class Player {
 				
 				System.out.println("\nFile created. To load this character in the future, enter their name: " + fileName);
 				setPlayerFileName(fileName);
+				savePlayer();
 			} else {
 				System.out.println("\nFile loaded. Welcome " + fileName);
 				
@@ -91,20 +93,17 @@ public class Player {
 		try {
 			Scanner fileIn = new Scanner(playerFile);
 			//Player file will be extremely basic and contain this order.
+			//@adding items
 			setMaxLevel(fileIn.nextInt());
-			System.out.print("Set level to " + getMaxLevel());
 			setMaxHealth(fileIn.nextInt());
-			System.out.print("\nSet max health to " + getMaxHealth());
 			setHealth(fileIn.nextInt());
-			System.out.print("\nSet health to " + getHealth());
 			setAttack(fileIn.nextInt());
-			System.out.print("\nSet attack to " + getAttack());
 			setDefense(fileIn.nextInt());
-			System.out.print("\nSet defense to " + getDefense());
 			setSpeed(fileIn.nextInt());
 			setKeys(fileIn.nextInt());
 			setMoney(fileIn.nextInt());
 			setBombs(fileIn.nextInt());
+			setHealthPotions(fileIn.nextInt());
 			fileIn.close();
 			return true;
 		} catch (Exception ex) { //Helpful for accidental empty files. 
@@ -141,36 +140,38 @@ public class Player {
 			//Couldn't be bothered to type " " 14 times
 			String sp = " ";
 			
+			//@adding items
 			//Player file will start a new line and save all the current loaded data.
 			tempPlayer.write(getMaxLevel() + sp + getMaxHealth() + sp + getHealth() + sp + getAttack() + sp + getDefense()
-								+ sp + getSpeed() + sp + getKeys() + sp + getMoney() + sp + getBombs());
+								+ sp + getSpeed() + sp + getKeys() + sp + getMoney() + sp + getBombs() + sp + getHealthPotions());
 			
-			System.out.println("\nTemporary file has been populated"); //debug
+			//System.out.println("\nTemporary file has been populated"); //debug
 			
 			if (oldFile.delete()) {
 				
-				System.out.println("\nOld file successfully deleted."); //debug
+				//System.out.println("\nOld file successfully deleted."); //debug
 				File saveFile = new File(playerFileName + ".txt");
 				
 				if (saveFile.createNewFile()) {
-					System.out.println("\nNew file successfully created."); //debug
+					//System.out.println("\nNew file successfully created."); //debug
 				} else {
-					System.out.println("\nNew file was not created."); //debug
+					//System.out.println("\nNew file was not created."); //debug
 				}
 				
 				tempPlayer.close();
 				
 				try {
 					FileWriter savePlayer = new FileWriter(saveFile);
+					//@adding items
 					savePlayer.write(getMaxLevel() + sp + getMaxHealth() + sp + getHealth() + sp + getAttack() + sp + getDefense()
-					+ sp + getSpeed() + sp + getKeys() + sp + getMoney() + sp + getBombs());
+					+ sp + getSpeed() + sp + getKeys() + sp + getMoney() + sp + getBombs() + sp + getHealthPotions());
 					
-					System.out.println("\nNew file saved successfully."); //debug
+					//System.out.println("\nNew file saved successfully."); //debug
 					
 					if (tempFile.delete()) {
-						System.out.println("\nTemporary file deleted successfully."); //debug
+						//System.out.println("\nTemporary file deleted successfully."); //debug
 					} else {
-						System.out.println("\nTemporary file was not deleted, somehow."); //debug
+						//System.out.println("\nTemporary file was not deleted, somehow."); //debug
 					}
 					
 					savePlayer.close();
@@ -196,7 +197,7 @@ public class Player {
 	}
 
 	
-	public void printStats() {
+	public void printStats() { //@adding items
 		System.out.println("Your health is at: " + getHealth() + "/" + getMaxHealth());
 		System.out.println("Your attack is:    " + getAttack());
 		System.out.println("Your defense is:   " + getDefense());
@@ -204,14 +205,24 @@ public class Player {
 		System.out.println("You have           " + getMoney() + " coins.");
 		System.out.println("You have           " + getKeys() + " keys.");
 		System.out.println("You have           " + getBombs() + " bombs.");
+		System.out.println("You have           " + getHealthPotions() + " health potions.");
 	}
 	
-	//Typical getters and setters, all the way down the line
-	
+	//Easy to use and to read
 	public void heal(int amount) {
 		setHealth(getHealth() + amount);
 	}
 	
+	public void deletePlayerFile() {
+		File thePoorSoul = new File(playerFileName + ".txt");
+		if(thePoorSoul.delete()) {
+			System.out.println("The poor soul is lost forever");
+		} else {
+			System.out.println("You have beaten death. Please stop doing that.");
+		}
+	}
+	
+	//returns whether or not the player died
 	public boolean damage(int amount) {
 		if (amount > getDefense()) {
 			setHealth(getHealth() - (amount - getDefense()));
@@ -313,15 +324,13 @@ public class Player {
 	public void setPlayerFileName(String playerFileName) {
 		this.playerFileName = playerFileName;
 	}
-	
-	
-//	try {
-//		FileWriter savePlayer = new FileWriter(playerFileName + ".txt");
-//		//Couldn't be bothered to type " " 14 times
-//		String sp = " ";
-//		
-//		//Player file will start a new line and save all the current loaded data.
-//		savePlayer.write("/n" + getMaxLevel() + sp + getMaxHealth() + sp + getHealth() + sp + getAttack() + sp + getDefense()
-//							+ sp + getSpeed() + sp + getKeys() + sp + getMoney() + sp + getBombs());
-//	}
+
+	public int getHealthPotions() {
+		return healthPotions;
+	}
+
+	public void setHealthPotions(int healthPotions) {
+		this.healthPotions = healthPotions;
+	}
+
 }

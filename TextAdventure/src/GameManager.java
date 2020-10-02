@@ -11,18 +11,19 @@ public class GameManager {
 	private boolean canRest = true;
 	private boolean defending = false;
 	private int defendCooldown = 0;
+	private int bombCooldown = 0;
 	boolean enemyTurn = true;
 	boolean combatInit = false;
 	
 	public GameManager(Player player){
 		setPlayer(player);
-		System.out.println("Player loaded into game successfully."); //debug
+		//System.out.println("Player loaded into game successfully."); //debug
 		System.out.println("If you need help at any point, type \"Help\" or \"Controls\".");
 		
 		setLevel(player.getMaxLevel());
 		System.out.println("You start on level " + getLevel());
 		setActiveFloor(new Floor(getLevel()));
-		getActiveFloor().visualize();
+		//getActiveFloor().visualize(); //debug
 	}
 	
 	public void playGame() {
@@ -38,6 +39,9 @@ public class GameManager {
 			if (combatInit) {
 				monster = new Enemy(getLevel());
 				setInCombat(true);
+				this.defendCooldown = 0;
+				this.bombCooldown = 0;
+				//Decides if the player or the enemy will go first
 				if (monster.getSpeed() > player.getSpeed()) {
 					System.out.println("Your opponent is faster than you!");
 					this.enemyTurn = true;
@@ -60,7 +64,13 @@ public class GameManager {
 					if (!monster.isStunned()) { //Checks to see if the monster is stunned, if yes unstun, if no it can attack.
 							if (!defending) { //If the player defended in their last move.
 								System.out.println("Your opponent attacks!");
-								player.damage(monster.getAttack());
+								if (player.damage(monster.getAttack())) {
+									System.out.println("Game Over!");
+									System.out.println("You made it to level " + getLevel());
+									System.out.println(player.getPlayerFileName() + " will be erased");
+									player.deletePlayerFile();
+									return;
+								}
 								this.enemyTurn = false;
 							} else {
 								System.out.println("You blocked the attack, and stunned your enemy!");
@@ -73,6 +83,9 @@ public class GameManager {
 						enemyTurn = false;
 					}
 				}
+			} else {
+				//Shows the map when not in combat to reduce spam
+				getActiveFloor().visualize();
 			}
 			
 			System.out.print("Input your next action: ");
@@ -91,7 +104,14 @@ public class GameManager {
 				System.out.println(getActiveFloor().passDescription());
 				
 			} else if (gameControl.equalsIgnoreCase("exit") ) {
-				//offer to save
+				System.out.println("Would you like to save first? (Y/N)");
+				while(!gameControl.equalsIgnoreCase("y") && !gameControl.equalsIgnoreCase("n")) {
+					gameControl = playerInput.nextLine();
+					if (gameControl.equalsIgnoreCase("y")) {
+							player.savePlayer();
+					}
+				}
+				gameControl = "exit";
 				
 			} else if (gameControl.equalsIgnoreCase("save") ) {
 				System.out.println("Are you sure you want to overwrite your file? You cannot undo this action. (Y/N)");
@@ -137,7 +157,76 @@ public class GameManager {
 				}
 				
 			} else if (gameControl.equalsIgnoreCase("item") ) {
-				//bring up an item menu
+				//Because using an item counts as a turn in combat, separate into combat/non combat uses
+				if(inCombat) {
+					System.out.println("Using an item in combat will count as a turn!");
+					while(!gameControl.equalsIgnoreCase("n")) {
+						System.out.println("You have " + player.getBombs() + " bombs available.");
+						System.out.println("You have " + player.getHealthPotions() + " health potions available.");
+						System.out.println("Type \"Bomb\" or \"Potion\" to use that item, or \"N\" to escape");
+						gameControl = playerInput.nextLine();
+						if (gameControl.equalsIgnoreCase("bomb")) {
+							
+							if (bombCooldown == 0) {
+								
+								if (player.getBombs()>0) {									
+									System.out.println("You used a bomb for massive damage!");
+									
+									if(monster.damage(monster.getMaxHealth()/2)) {
+										Random coinAmount = new Random();
+										int coins = coinAmount.nextInt(4+getLevel()*2);
+										System.out.println("You have defeated your foe and gained " + coins + " coins");
+										player.setMoney(player.getMoney()+coins);
+										setInCombat(false);
+									} else {
+										this.enemyTurn = true;
+									}
+									//Ends the loop so that the enemy can get their turn
+									gameControl = "n";
+								} else {
+									System.out.println("You don't have any bombs!");
+								}
+							} else {
+								System.out.println("You can't use another bomb for " + bombCooldown + " turns.");
+							}
+						} else if (gameControl.equalsIgnoreCase("potion")) {
+							if (player.getHealthPotions()>0) {
+								System.out.println("You healed for " + player.getMaxHealth()/4 + " health!");
+								player.heal(player.getMaxHealth()/4);
+								this.enemyTurn = true;
+								//Ends the loop so that the enemy can get their turn
+								gameControl = "n";
+							} else {
+								System.out.println("You don't have any potions!");
+							}
+
+						} else if (gameControl.equalsIgnoreCase("exit")) {
+							//exits out without saying anything
+						}
+						
+					}
+					
+				} else {
+					while(!gameControl.equalsIgnoreCase("n")) {
+						System.out.println("You have " + player.getBombs() + " bombs available.");
+						System.out.println("You have " + player.getHealthPotions() + " health potions available.");
+						System.out.println("Type \"Bomb\" or \"Potion\" to use that item, or \"N\" to escape");
+						gameControl = playerInput.nextLine();
+						
+						if (gameControl.equalsIgnoreCase("bomb")) {
+							System.out.println("You can't use a bomb when not in combat. You could hurt yourself.");
+						} else if (gameControl.equalsIgnoreCase("potion")) {
+							if (player.getHealthPotions()>0) {
+								System.out.println("You healed for " + player.getMaxHealth()/4 + " health!");
+								player.heal(player.getMaxHealth()/4);
+							} else {
+								System.out.println("You don't have any potions!");
+							}
+
+						}
+						
+					}
+				}
 				
 			} else if (gameControl.equalsIgnoreCase("move") ) {
 				if(inCombat) {
@@ -173,7 +262,50 @@ public class GameManager {
 				if(inCombat) {
 					System.out.println("You are under attack! Defeat your foe before you look for items.");
 				} else {
-					//add item to player's inventory
+					Random lootRoll = new Random();
+					int lootChance = lootRoll.nextInt(100);
+					
+					if(getActiveFloor().roomType().equals("item")) {
+						if (getActiveFloor().keyRoom()) {
+							System.out.println("You found a key! This probably unlocks something somewhere.");
+							player.setKeys(player.getKeys() +1);
+						} else {
+							if (lootChance < 50) {
+								System.out.println("You picked up a health potion! Drink at any time to regain health.");
+								player.setHealthPotions(player.getHealthPotions() +1);
+							} else if (lootChance >= 50) {
+								System.out.println("You picked up a bomb! Use during combat to deal massive damage.");
+								player.setBombs(player.getBombs() +1);
+							}
+							getActiveFloor().emptyRoom();
+						}
+							
+					} else if(getActiveFloor().roomType().equals("treasure")) {
+						if (lootChance < 22){
+							System.out.println("You found an amulet of health! You gain a boost of 10 hp!");
+							player.setMaxHealth(player.getMaxHealth()+10);
+							player.heal(10);
+						} else if (lootChance < 44) {
+							System.out.println("You found an amulet of attack! You gain a boost of 5 attack!");
+							player.setAttack(player.getAttack()+5);
+						} else if (lootChance < 66) {
+							System.out.println("You found an amulet of defense! You gain a boost of 5 defense!");
+							player.setDefense(player.getDefense()+5);
+						} else if (lootChance < 88) {
+							System.out.println("You found an amulet of speed! You gain a boost of 5 speed!");
+							player.setSpeed(player.getSpeed()+5);
+						} else {
+							System.out.println("You found a legendary amulet! All stats get a boost!");
+							player.setMaxHealth(player.getMaxHealth()+5);
+							player.heal(5);
+							player.setAttack(player.getAttack()+3);
+							player.setDefense(player.getDefense()+3);
+							player.setSpeed(player.getSpeed()+3);
+						}
+						getActiveFloor().emptyRoom();
+					} else {
+						System.out.println("This room has no treasure to plunder.");
+					}
 				}
 				
 			} else if (gameControl.equalsIgnoreCase("rest") ) {
@@ -189,7 +321,7 @@ public class GameManager {
 				
 			} else if (gameControl.equalsIgnoreCase("shop") ) {
 				if (getActiveFloor().roomType().equals("shop")) {
-					//open shop
+					shopMenu();
 				} else {
 					System.out.println("There is no shop here...");
 				}
@@ -233,6 +365,89 @@ public class GameManager {
 		return;
 	}
 
+
+	public void shopMenu() {
+		String input = "";
+		@SuppressWarnings("resource")
+		Scanner playerIn = new Scanner(System.in);
+		int costMultiplier = level/3;
+		
+		System.out.println("The shop keeper welcomes you to their store. You're directed to a list of their wares:");
+		
+		while(!input.equalsIgnoreCase("exit")) {
+			System.out.println("Item:            Cost:    \"Type me!\"");
+			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			System.out.println("Bombs:           3 gold   \"Bomb\"   ");
+			System.out.println("Health Potions:  3 gold   \"Potion\" ");
+			System.out.println("Health Boost(7): 6 gold   \"Health\" ");
+			System.out.println("Attack Boost(5): 6 gold   \"Attack\" ");
+			System.out.println("Defense Boost(5):6 gold   \"Defense\"");
+			System.out.println("Speed Boost(5):  3 gold   \"Speed\"  ");
+			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			System.out.println("You have " + player.getMoney() + " gold.");
+			
+			System.out.println("\nWhat would you like to purchase? \"Exit\" to exit the shop");
+			input = playerIn.nextLine();
+			
+			if (input.equalsIgnoreCase("bomb")) {
+				if (player.getMoney()<3+costMultiplier) {
+					System.out.println("It looks like you don't have enough money for this item.");
+				} else {
+					player.setMoney(player.getMoney() - 3+costMultiplier);
+					player.setBombs(player.getBombs()+1);
+					System.out.println("Bomb purchased!");
+				}
+			} else if (input.equalsIgnoreCase("potion")) {
+				if (player.getMoney()<3+costMultiplier) {
+					System.out.println("It looks like you don't have enough money for this item.");
+				} else {
+					player.setMoney(player.getMoney() - 3+costMultiplier);
+					player.setHealthPotions(player.getHealthPotions()+1);
+					System.out.println("Potion purchased!");
+				}
+			} else if (input.equalsIgnoreCase("health")) {
+				if (player.getMoney()<6+2*costMultiplier) {
+					System.out.println("It looks like you don't have enough money for this item.");
+				} else {
+					player.setMoney(player.getMoney() - 6+2*+costMultiplier);
+					player.setMaxHealth(player.getMaxHealth()+7);
+					player.heal(7);
+					System.out.println("Health Boost purchased!");
+				}
+			} else if (input.equalsIgnoreCase("attack")) {
+				if (player.getMoney()<6+2*costMultiplier) {
+					System.out.println("It looks like you don't have enough money for this item.");
+				} else {
+					player.setMoney(player.getMoney() - 6+2*costMultiplier);
+					player.setAttack(player.getAttack()+5);
+					System.out.println("Attack Boost purchased!");
+				}
+			} else if (input.equalsIgnoreCase("defense")) {
+				if (player.getMoney()<6+2*costMultiplier) {
+					System.out.println("It looks like you don't have enough money for this item.");
+				} else {
+					player.setMoney(player.getMoney() - 6+2*costMultiplier);
+					player.setDefense(player.getDefense()+5);
+					System.out.println("Defense Boost purchased!");
+				}
+			} else if (input.equalsIgnoreCase("speed")) {
+				if (player.getMoney()<5+2*costMultiplier) {
+					System.out.println("It looks like you don't have enough money for this item.");
+				} else {
+					player.setMoney(player.getMoney() - 5+2*costMultiplier);
+					player.setSpeed(player.getSpeed()+5);
+					System.out.println("Speed Boost purchased!");
+				}
+			} else if (input.equalsIgnoreCase("exit")) {
+				//Just skips without the "that's not a command" warning
+			} else {
+				System.out.println("Please select an item or exit the shop.");
+			}
+		}
+		System.out.println("The shopkeeper wished you luck, and waves goodbye");
+		
+	}
+	
 	
 	
 //	public void debug( ) {
@@ -286,7 +501,5 @@ public class GameManager {
 	public void setCanRest(boolean canRest) {
 		this.canRest = canRest;
 	}
-	
-	
-	
+
 }
