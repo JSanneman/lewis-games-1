@@ -1,6 +1,13 @@
 import java.util.Random;
 import java.util.Scanner;
 
+/**
+ * The Floor class creates and manages each Floor, including randomization,
+ * player position, and ferries information to and from the Room class.
+ * Generates a 4x4 array of Room objects for the field of play.
+ * The Floor class is called by the Game Manager and calls Room.
+ */
+
 public class Floor {
 	private int MAP_SIZE = 4; //created in case I want to make bigger maps, in caps for easy to read format (like a constant)
 	private Room[][] map = new Room[MAP_SIZE][MAP_SIZE];
@@ -116,7 +123,7 @@ public class Floor {
 					refreshFlag++;
 				}
 				break;
-			case 6:
+			case 6: //Adds keys in item rooms
 			case 7:
 				if (map[xTest][yTest].getRoomType() == "empty") {
 					map[xTest][yTest].setRoomType("item");
@@ -125,7 +132,7 @@ public class Floor {
 					refreshFlag++;
 				}
 				break;
-			case 8:
+			case 8: //Adds a third key if needed, and an item
 				if (map[xTest][yTest].getRoomType() == "empty") {
 					map[xTest][yTest].setRoomType("item");
 					if (extraKey) {
@@ -135,7 +142,7 @@ public class Floor {
 					refreshFlag++;
 				}
 				break;
-			case 9:
+			case 9: //Three possible additional item rooms
 			case 10:
 			case 11:
 				if (map[xTest][yTest].getRoomType() == "empty"&& xTest>=yTest) {
@@ -147,7 +154,7 @@ public class Floor {
 					refreshFlag++;
 				}
 				break;
-			case 12:
+			case 12: //Sets beginning position.
 				/**
 				 * If the player starts in a or on the edge, and the surrounding
 				 * tiles are locked, the game is soft locked. Therefore, a check
@@ -171,6 +178,8 @@ public class Floor {
 							setX(xTest);
 							setY(yTest);
 							//System.out.println("\nStarting Pos Success, Coords: " + xTest + ", " + yTest); //debug
+							//Prevents players from being attacked in the first room
+							roomEncountered();
 							refreshFlag++;
 							break;
 						}
@@ -188,6 +197,7 @@ public class Floor {
 							setX(xTest);
 							setY(yTest);
 							//System.out.println("\nStarting Pos Success, Coords: " + xTest + ", " + yTest); //debug
+							roomEncountered();
 							refreshFlag++;
 							break;
 						}
@@ -201,6 +211,7 @@ public class Floor {
 							setX(xTest);
 							setY(yTest);
 							//System.out.println("\nStarting Pos Success, Coords: " + xTest + ", " + yTest); //debug
+							roomEncountered();
 							refreshFlag++;
 							break;
 						}
@@ -214,6 +225,7 @@ public class Floor {
 							setX(xTest);
 							setY(yTest);
 							//System.out.println("\nStarting Pos Success, Coords: " + xTest + ", " + yTest); //debug
+							roomEncountered();
 							refreshFlag++;
 							break;
 						}
@@ -222,6 +234,7 @@ public class Floor {
 					setX(xTest);
 					setY(yTest);
 					//System.out.println("\nStarting Pos Success, Coords: " + xTest + ", " + yTest); //debug
+					roomEncountered();
 					refreshFlag++;
 					break;
 				} else {

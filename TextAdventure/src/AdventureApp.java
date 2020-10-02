@@ -1,9 +1,14 @@
 import java.util.Scanner;
 
+/**
+ * @author Jordan S
+ * Loaded on startup. Sets everything up to play the game.
+ * Calls the Game Manager
+ */
+
 public class AdventureApp {
 
-	public static void main(String[] args) {
-		//Floor test = new Floor(1);
+	public static void main(String[] args) { //Starts up with a greeting and goes straight into the response loop
 		
 		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		System.out.println("  Welcome to the endless dungeon!  ");
@@ -17,7 +22,7 @@ public class AdventureApp {
 
 	}
 	
-	public static void validResponse() {
+	public static void validResponse() { //Users can create/load a file or leave
 		String selection = "";
 		String str;
 		@SuppressWarnings("resource")

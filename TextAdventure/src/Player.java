@@ -2,6 +2,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.Scanner;
 
+/**
+ * Player classes are the program's copy of a player file.
+ * They open the file(or create it) and load the data from that file for use in game.
+ * The player object has values for everything the user can obtain or change about
+ * their player. It is used only by the Game Manager
+ */
+
 public class Player {
 	//The game needs easy access to all stats, so a player class will have all on hand.
 	private int maxLevel = 1;
@@ -208,11 +215,12 @@ public class Player {
 		System.out.println("You have           " + getHealthPotions() + " health potions.");
 	}
 	
-	//Easy to use and to read
+	//Easier to use and to read than get/set
 	public void heal(int amount) {
 		setHealth(getHealth() + amount);
 	}
 	
+	//When a player the file is lost forever
 	public void deletePlayerFile() {
 		File thePoorSoul = new File(playerFileName + ".txt");
 		if(thePoorSoul.delete()) {
@@ -259,6 +267,7 @@ public class Player {
 		return health;
 	}
 
+	//Health can't go over max health, issue a check here
 	public void setHealth(int health) {
 		if (health > getMaxHealth()) {
 			this.health = getMaxHealth();

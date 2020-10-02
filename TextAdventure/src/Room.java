@@ -1,14 +1,14 @@
 
-/** TO DO
- * 
- *
+/**
+ * Room objects are used to keep track of room types, in order to randomize floors.
+ * Each room has to keep track of its type and if it has been traveled through.
+ * It will also know if it's locked, if it has been unlocked, and if it has a key.
+ * All of the information it has is used to keep the floors random.
+ * The room class is called by the Floor class, but ferries some commands
+ * directly to the Game Manager with methods in the Floor class.
  */
 
 public class Room {
-	/**
-	 * Each Room will know it's own type and location in the grid,
-	 * and be able to pass along a description of the room
-	*/
 	private String roomType = "empty";
 	private String description;
 	private int x;

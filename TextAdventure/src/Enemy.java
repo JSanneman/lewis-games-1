@@ -1,5 +1,11 @@
 import java.util.Random;
 
+/**
+ * Enemy classes are similar to player classes, but are only used in combat.
+ * They have randomized stats to add a small amount of uniqueness.
+ * This object does not interact with any files and is called from Game Manager.
+ */
+
 public class Enemy {
 	private int difficulty;
 	private int maxHealth = 16;
@@ -36,44 +42,42 @@ public class Enemy {
 		rolled = roll.nextInt(4);
 		sign = roll.nextInt(2);
 		if (sign == 0) {
-			setMaxHealth(getMaxHealth() + rolled*(getDifficulty()/5));
+			setMaxHealth(getMaxHealth() + rolled*(getDifficulty()+5/5));
 			setHealth(getMaxHealth());
 		} else {
-			setMaxHealth(getMaxHealth() - rolled*(getDifficulty()/5));
+			setMaxHealth(getMaxHealth() - rolled*(getDifficulty()+5/5));
 			setHealth(getMaxHealth());
 		}
 		
 		rolled = roll.nextInt(2);
 		sign = roll.nextInt(2);
 		if (sign == 0) {
-			setAttack(getAttack() + rolled*(getDifficulty()/5));
+			setAttack(getAttack() + rolled*(getDifficulty()+5/5));
 		} else {
-			setAttack(getAttack() - rolled*(getDifficulty()/5));
+			setAttack(getAttack() - rolled*(getDifficulty()+5/5));
 		}
 		
 		rolled = roll.nextInt(2);
 		sign = roll.nextInt(2);
 		if (sign == 0) {
-			setDefense(getDefense() + rolled*(getDifficulty()/5));
+			setDefense(getDefense() + rolled*(getDifficulty()+5/5));
 		} else {
-			setDefense(getDefense() - rolled*(getDifficulty()/5));
+			setDefense(getDefense() - rolled*(getDifficulty()+5/5));
 		}
 		
 		rolled = roll.nextInt(2);
 		sign = roll.nextInt(2);
 		if (sign == 0) {
-			setSpeed(getSpeed() + rolled*(getDifficulty()/5));
+			setSpeed(getSpeed() + rolled*(getDifficulty()+5/5));
 		} else {
-			setSpeed(getSpeed() - rolled*(getDifficulty()/5));
+			setSpeed(getSpeed() - rolled*(getDifficulty()+5/5));
 		}
-		
-		//TODO add enemy types list (warrior, rogue, etc)
 		
 	}
 	
 	
 	
-	
+	//A stunned enemy will not be able to attack, but will not be stunned for the next turn
 	public boolean isStunned() {
 		if (this.stunned) {
 			this.stunned = false;
