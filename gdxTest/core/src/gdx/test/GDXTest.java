@@ -53,15 +53,16 @@ public class GDXTest extends ApplicationAdapter {
 	public void handleInput() {
 		boolean shiftPressed = false;
 		boolean controlPressed = false;
-		
 		if (Gdx.input.isTouched()) {
 			if(Gdx.input.isButtonPressed(Buttons.LEFT)) {
-				int deltaX = (mouseX-input.getX());
-				int deltaY = (mouseY-input.getY());
-				float mouseAngle = MathUtils.atan2(deltaY, deltaX);
-				cam.rotate(-camAngle);
-				cam.translate(deltaX*(cam.zoom)*cos(mouseAngle),deltaY*(cam.zoom)*sin(mouseAngle));
-				cam.rotate(camAngle);
+				float deltaX = (mouseX-input.getX());
+				float deltaY = (-mouseY+input.getY());
+				float mouseAngle = (float) ((180/Math.PI)*MathUtils.atan2(-deltaY, -deltaX));
+				if (mouseAngle < 0) {
+					mouseAngle+=360;
+				}
+				System.out.println("Delta X: " + deltaX + "  Delta Y: " + deltaY + "  Angle: " +mouseAngle + "  Camera Angle: " + camAngle);
+				cam.translate(deltaX*(cam.zoom)*(cos(mouseAngle)-cos(camAngle)),deltaY*(cam.zoom)*(sin(mouseAngle)-sin(camAngle)));
 				updateCam();
 			}
 			
