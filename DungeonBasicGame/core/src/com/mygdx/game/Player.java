@@ -7,14 +7,14 @@ import java.util.Scanner;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Polygon;
 
-import edu.lewisu.cs.cpsc41000.common.Boundary;
-import edu.lewisu.cs.cpsc41000.common.EdgeHandler;
-import edu.lewisu.cs.cpsc41000.common.ImageBasedScreenObject;
-import edu.lewisu.cs.cpsc41000.common.ImageBasedScreenObjectDrawer;
+//import edu.lewisu.cs.cpsc41000.common.Boundary;
+//import edu.lewisu.cs.cpsc41000.common.EdgeHandler;
+//import edu.lewisu.cs.cpsc41000.common.ImageBasedScreenObject;
+//import edu.lewisu.cs.cpsc41000.common.ImageBasedScreenObjectDrawer;
 import edu.lewisu.cs.cpsc41000.common.MobileImageBasedScreenObject;
-import edu.lewisu.cs.cpsc41000.common.labels.ActionLabel;
-import edu.lewisu.cs.cpsc41000.common.labels.SoundLabel;
-import edu.lewisu.cs.cpsc41000.common.motioncontrollers.Tracker;
+//import edu.lewisu.cs.cpsc41000.common.labels.ActionLabel;
+//import edu.lewisu.cs.cpsc41000.common.labels.SoundLabel;
+//import edu.lewisu.cs.cpsc41000.common.motioncontrollers.Tracker;
 
 /**
  * Player classes are the program's copy of a player file.

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Buttons;
+//import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -415,11 +415,7 @@ public class DungeonBasic extends ApplicationAdapter {
 			artist.draw(enemy);
 		}
 		
-/*		for (ImageBasedScreenObject wall : walls) {
-			artist.draw(wall);
-		}
-*/
-//		label.draw(batch,1f);
+		
 		batch.end();
 	}
 	

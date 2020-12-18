@@ -5,10 +5,9 @@ import java.util.Random;
 public class Floor {
 	private int MAP_SIZE = 4; //created in case I want to make bigger maps, in caps for easy to read format (like a constant)
 	private Room[][] map = new Room[MAP_SIZE][MAP_SIZE];
-	private int level;
+	//private int level;
 	private int xPos;
 	private int yPos;
-	private int usedKey = 0;
 	
 	public Floor(int level) {
 		int x = 0;

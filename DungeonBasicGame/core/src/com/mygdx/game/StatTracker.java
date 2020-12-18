@@ -5,12 +5,14 @@ package com.mygdx.game;
 import java.security.SecureRandom;
 
 public class StatTracker {
-	private int level, xPos, yPos;
+	private int level;
+	//private int xPos, yPos;
 	private Floor activeFloor;
 	protected boolean inCombat;
-	private boolean canRest;
-	private boolean defending; //maybe remove
+	//private boolean canRest;
+	//private boolean defending; //maybe remove
 	private Player player;
+	SecureRandom battle = new SecureRandom();
 	
 	protected boolean showKey, showChest, showCampfire, showShop, showStairs, showAmulet, showNull;
 	
@@ -184,7 +186,6 @@ public class StatTracker {
 	}
 	
 	public void battleStance(int chance) {
-		SecureRandom battle = new SecureRandom();
 		if (battle.nextInt(chance) == 0) {
 			this.inCombat = true;
 		}
