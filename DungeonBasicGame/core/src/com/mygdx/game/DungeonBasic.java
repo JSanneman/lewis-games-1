@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Buttons;
 //import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import edu.lewisu.cs.cpsc41000.common.Boundary;
@@ -24,24 +26,25 @@ import edu.lewisu.cs.cpsc41000.common.motioncontrollers.Tracker;
 
 public class DungeonBasic extends ApplicationAdapter {
 	SpriteBatch batch;
-	MobileImageBasedScreenObject enemy;
+	Enemy enemy;
 	Player player;
 	ImageBasedScreenObject topDoor, bottomDoor, leftDoor, rightDoor, topLock, bottomLock, leftLock, rightLock, topBD, bottomBD, leftBD, rightBD;
-	ImageBasedScreenObject key, chest, campfire, shop, stairs, potion, bomb, amulet;
+	ImageBasedScreenObject key, chest, campfire, shop, stairs, potion, bomb, amulet, swing;
 	ImageBasedScreenObjectDrawer artist;
 	ArrayList<ImageBasedScreenObject> walls;
 	EdgeHandler edge;
 	OrthographicCamera cam, titleCam, pauseCam;
 	float WIDTH, HEIGHT;
 	SoundLabel sound;
-	int scene; //0-title, 1-pause, 2-play
+	int scene; //0-title, 1-pause, 2-play, 3-game over, 4-shop
 	ActionLabel title, playPos, mousePos;
 	ArrayList<Boundary> boundaries;
-	Texture background, doorTex, lockTex, wallTex, img;
+	Texture background, doorTex, lockTex, wallTex, img, swingTex;
 	Texture keyTex, chestTex, campfireTex, shopTex, stairsTex, potionTex, bombTex, amuletTex;
 	TextureRegion wall, door, lock;
 	Tracker tracker;
 	boolean seeking, inCombat;
+	int swordTimer = 0;
 	
 	StatTracker game;
 	
@@ -69,24 +72,27 @@ public class DungeonBasic extends ApplicationAdapter {
 		potionTex = new Texture("textures/potion.png");
 		bombTex = new Texture("textures/bomb.png");
 		amuletTex = new Texture("textures/amulet.png");
+		swingTex = new Texture("textures/swing.png");
 		batch = new SpriteBatch();
 		
 		amulet = new ImageBasedScreenObject(amuletTex,(int) WIDTH/2,(int) HEIGHT/2, amuletTex.getWidth()/2, amuletTex.getHeight()/2, 0, 5, 5, false, false);
 		key = new ImageBasedScreenObject(keyTex,(int) WIDTH/2,(int) HEIGHT/2, keyTex.getWidth()/2, keyTex.getHeight()/2, 0, 5, 5, false, false);
 		chest = new ImageBasedScreenObject(chestTex,(int) WIDTH/2,(int) HEIGHT/2, chestTex.getWidth()/2, chestTex.getHeight()/2, 0, 5, 5, false, false);
-		campfire = new ImageBasedScreenObject(campfireTex, (int) WIDTH/2,(int) HEIGHT/2, campfireTex.getWidth()/2, campfireTex.getHeight()/2, 0, 5, 5, false, false);
-		shop = new ImageBasedScreenObject(shopTex,(int) WIDTH/2,(int) HEIGHT/2, shopTex.getWidth()/2, shopTex.getHeight()/2, 0, 5, 5, false, false);
+		campfire = new ImageBasedScreenObject(campfireTex, (int) WIDTH/2,(int) HEIGHT/2+30, campfireTex.getWidth()/2, campfireTex.getHeight()/2, 0, 5, 5, false, false);
+		shop = new ImageBasedScreenObject(shopTex,(int) WIDTH/2,(int) HEIGHT/2, shopTex.getWidth()/2, shopTex.getHeight()/2, 135, 5, 5, false, false);
 		stairs = new ImageBasedScreenObject(stairsTex,(int) WIDTH/2,(int) HEIGHT/2, stairsTex.getWidth()/2, stairsTex.getHeight()/2, 0, 5, 5, false, false);
+		swing = new ImageBasedScreenObject(swingTex,(int) WIDTH/2,(int) HEIGHT/2, swingTex.getWidth()/2, -7, 0, 5, 5, false, false);
 		
 		player = new Player(img,300,300,true);
 		player.setMaxSpeed(200);
 		player.setAcceleration(1600);
 		player.setDeceleration(1600);
 		player.scale(3,3);
+		player.centerOriginGeometrically();
 		
 		game = new StatTracker(player);
 		
-		enemy = new MobileImageBasedScreenObject(img,(int) WIDTH/2, (int) HEIGHT/2,true);
+		enemy = new Enemy(1, img,(int) WIDTH/2, (int) HEIGHT/2,true);
 		enemy.setMaxSpeed(100);
 		enemy.setAcceleration(400);
 		enemy.setDeceleration(100);
@@ -141,10 +147,11 @@ public class DungeonBasic extends ApplicationAdapter {
 		seeking = false;
 		
 		hideRoomAssets();
+		swing.hide();
 	}
 	
 	public void renderMainScene() {
-		mousePos = new ActionLabel(Gdx.input.getX()+ ", " + Gdx.input.getY(), 10, 10, "fonts/arial.fnt");
+		//mousePos = new ActionLabel(Gdx.input.getX()+ ", " + Gdx.input.getY(), 10, 10, "fonts/arial.fnt");
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		float dt = Gdx.graphics.getDeltaTime();
@@ -186,14 +193,15 @@ public class DungeonBasic extends ApplicationAdapter {
 			}
 		}
 		if (enemy.overlaps(player) && enemy.isVisible()) {
-			System.out.println("Collision");
+			player.hit(enemy);
 		}
-//		if (Gdx.input.isButtonJustPressed(Buttons.LEFT)) {
-//			if (sound.wasClicked(Gdx.input.getX(),HEIGHT-Gdx.input.getY())) {
-//				sound.stopSound();
-//				sound.playSound();
-//			}
-//		}
+		
+		player.updateFrames();
+		
+		if (Gdx.input.isButtonJustPressed(Buttons.LEFT) && swordTimer == 0) {
+			swing.show();
+			swordTimer = 30;
+		}
 		
 		Vector2 bounce;
 
@@ -211,6 +219,15 @@ public class DungeonBasic extends ApplicationAdapter {
 				}	
 			}
 		}
+		
+		if (enemy.overlaps(swing) && swordTimer > 29 && enemy.isVisible()) {
+			enemy.move(3*knockback().x, 3*knockback().y);
+			if (enemy.damage(player.getAttack())) {
+				enemy.hide();
+				game.endBattle();
+			}
+			
+		}
 
 		edge.enforceEdges();
 		batch.setProjectionMatrix(cam.combined); // game scene camera
@@ -220,8 +237,8 @@ public class DungeonBasic extends ApplicationAdapter {
 		batch.draw(wall, WIDTH-20, 0, 10, 10, HEIGHT, 50, 2, 1, 90);
 		batch.draw(wall, 0, 0, 10, 10, WIDTH, 50, 2, 1, 0);
 		batch.draw(wall, 0, HEIGHT-50, 10, 10, WIDTH, 50, 2, 1, 0);
-		playPos.draw(batch, 1f);
-		mousePos.draw(batch, 1f);
+		//playPos.draw(batch, 1f);
+		//mousePos.draw(batch, 1f);
 		
 		if (game.setBottomDoor() && !game.inCombat) {
 			if (game.bottomLock()) {
@@ -231,7 +248,7 @@ public class DungeonBasic extends ApplicationAdapter {
 					System.out.println("Lock!");
 					if (player.getKeys() >= 1) {
 						game.moveBottom(HEIGHT-90);
-						playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
+						//playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
 						player.useKey();
 					}
 				}
@@ -241,7 +258,7 @@ public class DungeonBasic extends ApplicationAdapter {
 				if (bottomDoor.overlaps(player)) {
 					System.out.println("Door!");
 					game.moveBottom(HEIGHT-90);
-					playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
+					//playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
 				}
 			}
 		} else {
@@ -257,7 +274,7 @@ public class DungeonBasic extends ApplicationAdapter {
 					System.out.println("Lock!");
 					if (player.getKeys() >= 1) {
 						game.moveTop(70);
-						playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
+						//playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
 						player.useKey();
 					}
 				}
@@ -267,7 +284,7 @@ public class DungeonBasic extends ApplicationAdapter {
 				if (topDoor.overlaps(player)) {
 					System.out.println("Door!");
 					game.moveTop(70);
-					playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
+					//playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
 				}
 			}
 		} else {
@@ -283,7 +300,7 @@ public class DungeonBasic extends ApplicationAdapter {
 					System.out.println("Lock!");
 					if (player.getKeys() >= 1) {
 						game.moveRight(70);
-						playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
+						//playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
 						player.useKey();
 					}
 				}
@@ -293,7 +310,7 @@ public class DungeonBasic extends ApplicationAdapter {
 				if (rightDoor.overlaps(player)) {
 					System.out.println("Door!");
 					game.moveRight(70);
-					playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
+					//playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
 				}
 			}
 		} else {
@@ -309,7 +326,7 @@ public class DungeonBasic extends ApplicationAdapter {
 					System.out.println("Lock!");
 					if (player.getKeys() >= 1) {
 						game.moveLeft(WIDTH-90);
-						playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
+						//playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
 						player.useKey();
 					}
 				}
@@ -319,7 +336,7 @@ public class DungeonBasic extends ApplicationAdapter {
 				if (leftDoor.overlaps(player)) {
 					System.out.println("Door!");
 					game.moveLeft(WIDTH-90);
-					playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
+					//playPos = new ActionLabel(game.xString() + ", " + game.yString(), 10, 440, "fonts/arial.fnt");
 				}
 			}
 		} else {
@@ -385,6 +402,7 @@ public class DungeonBasic extends ApplicationAdapter {
 		
 		if (player.getYPos()>=HEIGHT/2) {
 			artist.draw(player);
+			artist.draw(swing);
 			artist.draw(enemy);
 		}
 		
@@ -412,11 +430,19 @@ public class DungeonBasic extends ApplicationAdapter {
 		
 		if (player.getYPos()<HEIGHT/2) {
 			artist.draw(player);
+			artist.draw(swing);
 			artist.draw(enemy);
 		}
 		
 		
 		batch.end();
+		
+		updateSword();
+		if (swordTimer > 0) {
+			swordTimer--;
+		} else {
+			swing.hide();
+		}
 	}
 	
 	public void hideRoomAssets() {
@@ -428,6 +454,26 @@ public class DungeonBasic extends ApplicationAdapter {
 		stairs.hide();
 	}
 	
+	float deltaX, deltaY, theta;
+	
+	public void updateSword() {
+		swing.setXPos(player.getXPos()-5);
+		swing.setYPos(player.getYPos()+15);
+		
+		deltaX = Gdx.input.getX()-player.getXPos();
+		deltaY = -Gdx.input.getY()+HEIGHT-player.getYPos();
+		theta = MathUtils.atan2(-deltaY, -deltaX) * (180/MathUtils.PI);
+		swing.setRotation(theta+90);
+	}
+	
+	public Vector2 knockback() {
+		Vector2 bounce = new Vector2();
+		bounce.add(3,0).setAngle(theta+180);
+		return bounce;
+		
+		// new Vector2((int)(getSpeed()*elasticity*acceleration),0).setAngle(angle));
+	}
+	
 	public void initBattle() {
 		hideRoomAssets();
 		System.out.println("Battle sequence initiated");
@@ -435,7 +481,7 @@ public class DungeonBasic extends ApplicationAdapter {
 		bottomBD.show();
 		leftBD.show();
 		rightBD.show();
-		enemy = new MobileImageBasedScreenObject(img,(int) WIDTH/2, (int) HEIGHT/2,true);
+		enemy = new Enemy(game.getLevel(), img,(int) WIDTH/2, (int) HEIGHT/2,true);
 		enemy.setMaxSpeed(100);
 		enemy.setAcceleration(400);
 		enemy.setDeceleration(100);

@@ -2,13 +2,18 @@ package com.mygdx.game;
 
 import java.util.Random;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Polygon;
+
+import edu.lewisu.cs.cpsc41000.common.MobileImageBasedScreenObject;
+
 /**
  * Enemy classes are similar to player classes, but are only used in combat.
  * They have randomized stats to add a small amount of uniqueness.
  * This object does not interact with any files and is called from Game Manager.
  */
 
-public class Enemy {
+public class Enemy extends MobileImageBasedScreenObject{
 	private int difficulty;
 	private int maxHealth = 16;
 	private int health = 16;
@@ -18,7 +23,8 @@ public class Enemy {
 	private String eType = "basic";
 	private boolean stunned = false;
 	
-	public Enemy(int level) {
+	public Enemy(int level, Texture img, int i, int j, boolean b) {
+		super(img, i, j, b);
 		//Enemy initialized with leveled stats based on what floor they spawn on.
 		setDifficulty(level);
 		setMaxHealth(getMaxHealth() + 4*getDifficulty());
@@ -142,10 +148,10 @@ public class Enemy {
 	public void setDefense(int defense) {
 		this.defense = defense;
 	}
-	public int getSpeed() {
+	public int getSpeedStat() {
 		return speed;
 	}
-	public void setSpeed(int speed) {
+	public void setSpeedStat(int speed) {
 		this.speed = speed;
 	}
 
@@ -156,6 +162,34 @@ public class Enemy {
 	public void seteType(String eType) {
 		this.eType = eType;
 	}
+	
+	@Override
+    public void initBoundingPolygon() { //Creates an octogon with turned so points are on top/bottom/etc
+		float d = super.getWidth();
+		float r = d/2;
+		float diag = (float) (Math.sqrt(2)/2);
+		float a = r*(1-diag);
+		float b = a + r;
+		
+        float[] vertices = new float[16];
+        vertices[0] = r;
+        vertices[1] = 0;
+        vertices[2] = b;
+        vertices[3] = a;
+        vertices[4] = d;
+        vertices[5] = r;
+        vertices[6] = b;
+        vertices[7] = b;
+        vertices[8] = r;
+        vertices[9] = d;
+        vertices[10] = a;
+        vertices[11] = b;
+        vertices[12] = 0;
+        vertices[13] = r;
+        vertices[14] = a;
+        vertices[15] = a;
+        boundingPolygon = new Polygon(vertices);
+    }
 	
 	
 }

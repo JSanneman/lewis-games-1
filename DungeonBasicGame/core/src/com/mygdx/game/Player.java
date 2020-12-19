@@ -47,6 +47,8 @@ public class Player extends MobileImageBasedScreenObject{
 	private int bombs = 0;
 	private int healthPotions = 0;
 	private String playerFileName = "";
+	private int hitFrames = 0;
+	protected boolean alive = true;
 	
 	@Override
     public void initBoundingPolygon() { //Creates an octogon with turned so points are on top/bottom/etc
@@ -352,6 +354,22 @@ public class Player extends MobileImageBasedScreenObject{
 
 	public void setHealthPotions(int healthPotions) {
 		this.healthPotions = healthPotions;
+	}
+	
+	public void hit(Enemy enemy) {
+		if (hitFrames == 0) {
+			this.hitFrames=30;
+			if (this.damage(enemy.getAttack())) {
+				this.alive = false;
+				System.out.println("Game Over");
+			}
+		}
+	}
+	
+	public void updateFrames() {
+		if (this.hitFrames>0) {
+			this.hitFrames--;
+		}
 	}
 
 }
